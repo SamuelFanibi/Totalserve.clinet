@@ -1,25 +1,31 @@
-#So excited to write my first pipeline
+# So excited to write my first pipeline
 
-trigger:  
--master
+trigger:
+- master
 
 pool:
-  vmImage: windows-latest
+  vmImage: 'windows-latest'
 
 stages:
-- stage: Build  
+- stage: Build
   displayName: Total Serve Client Application
 
-  Steps: 
-   - script: npm install
-     displayName: Restore Packages
+  jobs:
+  - job: BuildJob
+    displayName: Build Job
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '22.x'
+      displayName: Set up Node.js
 
-   - script: npm run build
-     displayName: Build Application
+    - script: npm install
+      displayName: Restore Packages
 
+    - script: npm run build
+      displayName: Build Total Serve Application
 
-
-
-
-
-
+    - task: PublishBuildArtifact@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
